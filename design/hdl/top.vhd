@@ -11,6 +11,7 @@ entity top is
     rst_n     : in std_ulogic;
     uart0_tx  : out std_ulogic;
     uart0_rx  : in std_ulogic;
+    seg_en    : in std_ulogic;
     disp0     : out std_ulogic_vector(7 downto 0);
     disp1     : out std_ulogic_vector(7 downto 0);
     disp2     : out std_ulogic_vector(7 downto 0);
@@ -102,26 +103,6 @@ begin
     uart0_rxd_i => uart0_rx -- UART0 receive data
   );
 
-  --neorv32_test_setup_on_chip_debugger_inst : entity work.neorv32_test_setup_on_chip_debugger
-  --  generic
-  --  map (
-  --  CLOCK_FREQUENCY   => 50_000_000,
-  --  MEM_INT_IMEM_SIZE => 16 * 1024,
-  --  MEM_INT_DMEM_SIZE => 8 * 1024
-  --  )
-  --  port map(
-  --    clk_i       => clk,
-  --    rstn_i      => rst_n,
-  --    jtag_trst_i => jtag_trst,
-  --    jtag_tck_i  => jtag_tck,
-  --    jtag_tdi_i  => jtag_tdi,
-  --    jtag_tdo_o  => jtag_tdo,
-  --    jtag_tms_i  => jtag_tms,
-  --    gpio_o      => con_gpio,
-  --    uart0_txd_o => uart0_tx,
-  --    uart0_rxd_i => uart0_rx
-  --  );
-
   seg_hw_ip_inst : entity work.seg_hw_ip
     generic
     map (
@@ -129,6 +110,7 @@ begin
     WB_ADDR_SIZE => 4
     )
     port map(
+      enable_i  => seg_en,
       wb_clk_i  => clk,
       wb_rstn_i => rst_n,
       wb_adr_i  => wb_adr,
@@ -146,8 +128,6 @@ begin
       segled4_o => disp4,
       segled5_o => disp5
     );
-
-
   gpio <= con_gpio(7 downto 0);
 
 end architecture;

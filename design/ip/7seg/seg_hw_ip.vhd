@@ -14,6 +14,7 @@ entity seg_hw_ip is
   );
   port (
     -- wishbone host interface --
+    enable_i  : in std_ulogic;
     wb_clk_i  : in std_ulogic; -- clock
     wb_rstn_i : in std_ulogic; -- reset, async, low-active
     wb_adr_i  : in std_ulogic_vector(31 downto 0); -- address
@@ -44,7 +45,12 @@ architecture seg_hw_ip_rtl of seg_hw_ip is
 
   -- dummy registers --
   type mm_reg_t is array (0 to (WB_ADDR_SIZE/4) - 1) of std_ulogic_vector(31 downto 0);
-  signal mm_reg : mm_reg_t;
+  type segled_t is array (0 to 5) of std_ulogic_vector(7 downto 0);
+  type hexval_t is array (0 to 5) of integer range 0 to 15;
+
+  signal segled_int : segled_t;
+  signal hexval_int : hexval_t;
+  signal mm_reg     : mm_reg_t;
 
   signal hex0 : natural range 0 to 15;
   signal hex1 : natural range 0 to 15;
@@ -55,8 +61,9 @@ architecture seg_hw_ip_rtl of seg_hw_ip is
 
   component seg
     port (
-      din : in natural range 0 to 15;
-      led : out std_ulogic_vector(7 downto 0)
+      enable : in std_ulogic;
+      din    : in natural range 0 to 15;
+      led    : out std_ulogic_vector(7 downto 0)
     );
   end component;
 
@@ -100,52 +107,30 @@ begin
     end if;
   end process rw_access;
 
-  hex0 <= to_integer(unsigned(mm_reg(0)(3 downto 0)));
-  hex1 <= to_integer(unsigned(mm_reg(0)(7 downto 4)));
-  hex2 <= to_integer(unsigned(mm_reg(0)(11 downto 8)));
-  hex3 <= to_integer(unsigned(mm_reg(0)(15 downto 12)));
-  hex4 <= to_integer(unsigned(mm_reg(0)(19 downto 16)));
-  hex5 <= to_integer(unsigned(mm_reg(0)(23 downto 20)));
+  -- Split up data into seperate 7seg display values
+  hexval_int(0) <= to_integer(unsigned(mm_reg(0)(3 downto 0)));
+  hexval_int(1) <= to_integer(unsigned(mm_reg(0)(7 downto 4)));
+  hexval_int(2) <= to_integer(unsigned(mm_reg(0)(11 downto 8)));
+  hexval_int(3) <= to_integer(unsigned(mm_reg(0)(15 downto 12)));
+  hexval_int(4) <= to_integer(unsigned(mm_reg(0)(19 downto 16)));
+  hexval_int(5) <= to_integer(unsigned(mm_reg(0)(23 downto 20)));
 
-  seg_inst_0 : seg
-  port map
-  (
-    din => hex0,
-    led => segled0_o
-  );
+  -- Output data
+  segled0_o <= segled_int(0);
+  segled1_o <= segled_int(1);
+  segled2_o <= segled_int(2);
+  segled3_o <= segled_int(3);
+  segled4_o <= segled_int(4);
+  segled5_o <= segled_int(5);
 
-  seg_inst_1 : seg
-  port map
-  (
-    din => hex1,
-    led => segled1_o
-  );
+  seg_gen : for i in 0 to 5 generate
+    seg_inst : seg
+    port map
+    (
+      enable => enable_i,
+      din    => hexval_int(i),
+      led    => segled_int(i)
+    );
+  end generate;
 
-  seg_inst_2 : seg
-  port map
-  (
-    din => hex2,
-    led => segled2_o
-  );
-
-  seg_inst_3 : seg
-  port map
-  (
-    din => hex3,
-    led => segled3_o
-  );
-
-  seg_inst_4 : seg
-  port map
-  (
-    din => hex4,
-    led => segled4_o
-  );
-
-  seg_inst_5 : seg
-  port map
-  (
-    din => hex5,
-    led => segled5_o
-  );
 end architecture;
