@@ -64,12 +64,12 @@ begin
   MEM_INT_DMEM_EN   => true, -- implement processor-internal data memory
   MEM_INT_DMEM_SIZE => 16 * 1024, -- size of processor-internal data memory in bytes
   -- External memory interface (WISHBONE) --
-  MEM_EXT_EN => true, -- implement external memory bus interface?
-  --MEM_EXT_TIMEOUT    : natural := 255; -- cycles after a pending bus access auto-terminates (0 = disabled)
-  --MEM_EXT_PIPE_MODE  : boolean := false; -- protocol: false=classic/standard wishbone mode, true=pipelined wishbone mode
-  --MEM_EXT_BIG_ENDIAN : boolean := false; -- byte order: true=big-endian, false=little-endian
-  --MEM_EXT_ASYNC_RX   : boolean := false; -- use register buffer for RX data when false
-  --MEM_EXT_ASYNC_TX   : boolean := false; -- use register buffer for TX data when false
+  MEM_EXT_EN         => true, -- implement external memory bus interface?
+  MEM_EXT_TIMEOUT    => 255, -- cycles after a pending bus access auto-terminates (0 = disabled)
+  MEM_EXT_PIPE_MODE  => false, -- protocol: false=classic/standard wishbone mode, true=pipelined wishbone mode
+  MEM_EXT_BIG_ENDIAN => false, -- byte order: true=big-endian, false=little-endian
+  MEM_EXT_ASYNC_RX   => false, -- use register buffer for RX data when false
+  MEM_EXT_ASYNC_TX   => false, -- use register buffer for TX data when false
   -- Processor peripherals --
   IO_GPIO_NUM => 8, -- number of GPIO input/output pairs (0..64)
   IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
