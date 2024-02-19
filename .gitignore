@@ -4,3 +4,5 @@ simulation/
 db/
 incremental_db/
 .qsys_edit/
+.vscode/
+neorv32_assignment_defaults.qdf
