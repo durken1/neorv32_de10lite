@@ -2,3 +2,6 @@
 	path = design/ip/neorv32
 	url = git@github.com:durken1/neorv32.git
 	branch = de10_lite
+[submodule "design/ip/neorv32-freertos"]
+	path = design/ip/neorv32-freertos
+	url = git@github.com:durken1/neorv32-freertos.git
