@@ -46,11 +46,16 @@ architecture seg_hw_ip_rtl of seg_hw_ip is
   -- dummy registers --
   type mm_reg_t is array (0 to (WB_ADDR_SIZE/4) - 1) of std_ulogic_vector(31 downto 0);
   type segled_t is array (0 to 5) of std_ulogic_vector(7 downto 0);
-  type hexval_t is array (0 to 5) of integer range 0 to 15;
+  type segval_t is array (0 to 5) of std_ulogic_vector(3 downto 0);
 
-  signal segled_int : segled_t;
-  signal hexval_int : hexval_t;
-  signal mm_reg     : mm_reg_t;
+  signal segled_int   : segled_t;
+  signal segval_int   : segval_t;
+  signal signed_int   : std_ulogic;
+  signal dec_int      : std_ulogic;
+  signal mm_reg       : mm_reg_t;
+  signal mm_reg_neg   : std_ulogic_vector(31 downto 0);
+  signal bcd_unsigned : std_ulogic_vector(23 downto 0);
+  signal bcd_signed   : std_ulogic_vector(19 downto 0);
 
   signal hex0 : natural range 0 to 15;
   signal hex1 : natural range 0 to 15;
@@ -62,12 +67,16 @@ architecture seg_hw_ip_rtl of seg_hw_ip is
   component seg
     port (
       enable : in std_ulogic;
-      din    : in natural range 0 to 15;
+      din    : in std_ulogic_vector(3 downto 0);
       led    : out std_ulogic_vector(7 downto 0)
     );
   end component;
 
 begin
+
+  mm_reg_neg <= std_ulogic_vector(-(signed(mm_reg(0))));
+  signed_int <= mm_reg(1)(0);
+  dec_int    <= mm_reg(1)(1);
 
   -- Sanity Checks --------------------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
@@ -108,27 +117,93 @@ begin
   end process rw_access;
 
   -- Split up data into seperate 7seg display values
-  hexval_int(0) <= to_integer(unsigned(mm_reg(0)(3 downto 0)));
-  hexval_int(1) <= to_integer(unsigned(mm_reg(0)(7 downto 4)));
-  hexval_int(2) <= to_integer(unsigned(mm_reg(0)(11 downto 8)));
-  hexval_int(3) <= to_integer(unsigned(mm_reg(0)(15 downto 12)));
-  hexval_int(4) <= to_integer(unsigned(mm_reg(0)(19 downto 16)));
-  hexval_int(5) <= to_integer(unsigned(mm_reg(0)(23 downto 20)));
-
   -- Output data
-  segled0_o <= segled_int(0);
-  segled1_o <= segled_int(1);
-  segled2_o <= segled_int(2);
-  segled3_o <= segled_int(3);
-  segled4_o <= segled_int(4);
-  segled5_o <= segled_int(5);
+  process (wb_clk_i, wb_rstn_i)
+  begin
+    if wb_rstn_i = '0' then
+      segled0_o <= (others => '1');
+      segled1_o <= (others => '1');
+      segled2_o <= (others => '1');
+      segled3_o <= (others => '1');
+      segled4_o <= (others => '1');
+      segled5_o <= (others => '1');
+    elsif rising_edge(wb_clk_i) then
+      segled0_o <= segled_int(0); 
+      segled1_o <= segled_int(1); 
+      segled2_o <= segled_int(2); 
+      segled3_o <= segled_int(3); 
+      segled4_o <= segled_int(4); 
+      segled5_o <= segled_int(5); 
+      
+      if (signed_int = '1' and mm_reg(0)(31) = '1') then
+        segled5_o <= "10111111"; -- minus sign
+        if (dec_int = '1') then
+          segval_int(0) <= bcd_signed(3 downto 0);
+          segval_int(1) <= bcd_signed(7 downto 4);
+          segval_int(2) <= bcd_signed(11 downto 8);
+          segval_int(3) <= bcd_signed(15 downto 12);
+          segval_int(4) <= bcd_signed(19 downto 16);
+
+        else
+          segval_int(0) <= mm_reg_neg(3 downto 0);
+          segval_int(1) <= mm_reg_neg(7 downto 4);
+          segval_int(2) <= mm_reg_neg(11 downto 8);
+          segval_int(3) <= mm_reg_neg(15 downto 12);
+          segval_int(4) <= mm_reg_neg(19 downto 16);
+        end if;
+
+      else
+        if (dec_int = '1') then
+          segval_int(0) <= bcd_unsigned(3 downto 0);
+          segval_int(1) <= bcd_unsigned(7 downto 4);
+          segval_int(2) <= bcd_unsigned(11 downto 8);
+          segval_int(3) <= bcd_unsigned(15 downto 12);
+          segval_int(4) <= bcd_unsigned(19 downto 16);
+          segval_int(5) <= bcd_unsigned(23 downto 20);
+        else
+          segval_int(0) <= mm_reg(0)(3 downto 0);
+          segval_int(1) <= mm_reg(0)(7 downto 4);
+          segval_int(2) <= mm_reg(0)(11 downto 8);
+          segval_int(3) <= mm_reg(0)(15 downto 12);
+          segval_int(4) <= mm_reg(0)(19 downto 16);
+          segval_int(5) <= mm_reg(0)(23 downto 20);
+        end if;
+      end if;
+    end if;
+  end process;
+
+  bin2bcd_unsigned : entity work.bin2bcd
+    generic
+    map (
+    bin_width_g => 20,
+    dec_width_g => 6
+    )
+    port map(
+      clk_50_i  => wb_clk_i,
+      reset_n_i => wb_rstn_i,
+      num_bin_i => mm_reg(0)(19 downto 0),
+      num_bcd_o => bcd_unsigned
+    );
+
+  bin2bcd_signed : entity work.bin2bcd
+    generic
+    map (
+    bin_width_g => 17,
+    dec_width_g => 5
+    )
+    port map(
+      clk_50_i  => wb_clk_i,
+      reset_n_i => wb_rstn_i,
+      num_bin_i => mm_reg_neg(16 downto 0),
+      num_bcd_o => bcd_signed
+    );
 
   seg_gen : for i in 0 to 5 generate
     seg_inst : seg
     port map
     (
       enable => enable_i,
-      din    => hexval_int(i),
+      din    => segval_int(i),
       led    => segled_int(i)
     );
   end generate;

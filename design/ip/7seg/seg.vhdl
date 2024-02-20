@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity seg is
   port (
     enable : in std_ulogic;
-    din    : in natural range 0 to 15;
+    din    : in std_ulogic_vector(3 downto 0);
     led    : out std_ulogic_vector(7 downto 0)
   );
 end entity seg;
@@ -34,6 +34,6 @@ architecture rtl of seg is
 
 begin
 
-  led <= display_c(din) when enable = '1' else (others => '1');
+  led <= display_c(to_integer(unsigned(din))) when enable = '1' else (others => '1');
 
 end architecture;
