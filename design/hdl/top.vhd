@@ -18,7 +18,8 @@ entity top is
     disp3     : out std_ulogic_vector(7 downto 0);
     disp4     : out std_ulogic_vector(7 downto 0);
     disp5     : out std_ulogic_vector(7 downto 0);
-    gpio      : out std_ulogic_vector(7 downto 0);
+    gpio_o    : out std_ulogic_vector(7 downto 0);
+    gpio_i    : in std_ulogic_vector(1 downto 0);
     jtag_trst : in std_ulogic  := 'X'; -- trst
     jtag_tck  : in std_ulogic  := 'X'; -- tck
     jtag_tdi  : in std_ulogic  := 'X'; -- tdi
@@ -29,7 +30,9 @@ end entity top;
 
 architecture rtl of top is
 
-  signal con_gpio : std_ulogic_vector(63 downto 0);
+  signal con_gpio_o : std_ulogic_vector(63 downto 0);
+  signal con_gpio_i : std_ulogic_vector(63 downto 0);
+
   signal wb_tag   : std_ulogic_vector(02 downto 0); -- request tag
   signal wb_adr   : std_ulogic_vector(31 downto 0); -- address
   signal wb_dat_i : std_ulogic_vector(31 downto 0); -- read data
@@ -71,7 +74,7 @@ begin
   MEM_EXT_ASYNC_RX   => false, -- use register buffer for RX data when false
   MEM_EXT_ASYNC_TX   => false, -- use register buffer for TX data when false
   -- Processor peripherals --
-  IO_GPIO_NUM => 8, -- number of GPIO input/output pairs (0..64)
+  IO_GPIO_NUM => 10, -- number of GPIO input/output pairs (0..64)
   IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
   IO_UART0_EN => true -- implement primary universal asynchronous receiver/transmitter (UART0)?
   )
@@ -97,7 +100,8 @@ begin
     wb_ack_i => wb_ack, -- transfer acknowledge
     wb_err_i => wb_err, -- transfer error
     -- GPIO (available if IO_GPIO_NUM > 0) --
-    gpio_o => con_gpio, -- parallel output
+    gpio_o => con_gpio_o, -- parallel output
+    gpio_i => con_gpio_i, -- parallel output
     -- primary UART0 (available if IO_UART0_EN = true) --
     uart0_txd_o => uart0_tx, -- UART0 send data
     uart0_rxd_i => uart0_rx -- UART0 receive data
@@ -107,7 +111,7 @@ begin
     generic
     map (
     WB_ADDR_BASE => X"90000000",
-    WB_ADDR_SIZE => 4
+    WB_ADDR_SIZE => 8
     )
     port map(
       enable_i  => seg_en,
@@ -128,6 +132,7 @@ begin
       segled4_o => disp4,
       segled5_o => disp5
     );
-  gpio <= con_gpio(7 downto 0);
+  gpio_o <= con_gpio_o(7 downto 0);
+  con_gpio_i(1 downto 0) <= gpio_i;
 
 end architecture;
