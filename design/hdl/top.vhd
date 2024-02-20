@@ -18,8 +18,8 @@ entity top is
     disp3     : out std_ulogic_vector(7 downto 0);
     disp4     : out std_ulogic_vector(7 downto 0);
     disp5     : out std_ulogic_vector(7 downto 0);
-    gpio_o    : out std_ulogic_vector(7 downto 0);
-    gpio_i    : in std_ulogic_vector(1 downto 0);
+    gpio_o    : out std_ulogic_vector(9 downto 0);
+    gpio_i    : in std_ulogic_vector(9 downto 0);
     jtag_trst : in std_ulogic  := 'X'; -- trst
     jtag_tck  : in std_ulogic  := 'X'; -- tck
     jtag_tdi  : in std_ulogic  := 'X'; -- tdi
@@ -132,7 +132,7 @@ begin
       segled4_o => disp4,
       segled5_o => disp5
     );
-  gpio_o <= con_gpio_o(7 downto 0);
-  con_gpio_i(1 downto 0) <= gpio_i;
+  gpio_o <= con_gpio_o(9 downto 0);
+  con_gpio_i(9 downto 0) <= gpio_i;
 
 end architecture;
