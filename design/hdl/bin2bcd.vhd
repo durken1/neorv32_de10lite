@@ -3,8 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity bin2bcd is
-  generic
-  (
+  generic (
     bin_width_g : in positive := 4;
     dec_width_g : in positive := 2
   );
