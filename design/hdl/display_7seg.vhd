@@ -98,12 +98,12 @@ begin
   process (clk_i, rstn_i)
   begin
     if rstn_i = '0' then
-      segled0_o <= (others => '1');
-      segled1_o <= (others => '1');
-      segled2_o <= (others => '1');
-      segled3_o <= (others => '1');
-      segled4_o <= (others => '1');
-      segled5_o <= (others => '1');
+      segled0_o <= off_c;
+      segled1_o <= off_c;
+      segled2_o <= off_c;
+      segled3_o <= off_c;
+      segled4_o <= off_c;
+      segled5_o <= off_c;
 
     elsif rising_edge(clk_i) then
       if (enablen_int = '1') then
