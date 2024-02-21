@@ -11,7 +11,6 @@ entity top is
     rst_n     : in std_ulogic;
     uart0_tx  : out std_ulogic;
     uart0_rx  : in std_ulogic;
-    seg_en    : in std_ulogic;
     disp0     : out std_ulogic_vector(7 downto 0);
     disp1     : out std_ulogic_vector(7 downto 0);
     disp2     : out std_ulogic_vector(7 downto 0);
@@ -19,7 +18,7 @@ entity top is
     disp4     : out std_ulogic_vector(7 downto 0);
     disp5     : out std_ulogic_vector(7 downto 0);
     gpio_o    : out std_ulogic_vector(9 downto 0);
-    gpio_i    : in std_ulogic_vector(9 downto 0);
+    gpio_i    : in std_ulogic_vector(10 downto 0);
     jtag_trst : in std_ulogic  := 'X'; -- trst
     jtag_tck  : in std_ulogic  := 'X'; -- tck
     jtag_tdi  : in std_ulogic  := 'X'; -- tdi
@@ -74,7 +73,7 @@ begin
   MEM_EXT_ASYNC_RX   => false, -- use register buffer for RX data when false
   MEM_EXT_ASYNC_TX   => false, -- use register buffer for TX data when false
   -- Processor peripherals --
-  IO_GPIO_NUM => 10, -- number of GPIO input/output pairs (0..64)
+  IO_GPIO_NUM => 11, -- number of GPIO input/output pairs (0..64)
   IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
   IO_UART0_EN => true -- implement primary universal asynchronous receiver/transmitter (UART0)?
   )
@@ -107,14 +106,13 @@ begin
     uart0_rxd_i => uart0_rx -- UART0 receive data
   );
 
-  seg_hw_ip_inst : entity work.seg_hw_ip
+  wb_wrapper_inst : entity work.wb_wrapper
     generic
     map (
     WB_ADDR_BASE => X"90000000",
     WB_ADDR_SIZE => 8
     )
     port map(
-      enable_i  => seg_en,
       wb_clk_i  => clk,
       wb_rstn_i => rst_n,
       wb_adr_i  => wb_adr,
@@ -132,7 +130,8 @@ begin
       segled4_o => disp4,
       segled5_o => disp5
     );
+
   gpio_o <= con_gpio_o(9 downto 0);
-  con_gpio_i(9 downto 0) <= gpio_i;
+  con_gpio_i(10 downto 0) <= gpio_i;
 
 end architecture;

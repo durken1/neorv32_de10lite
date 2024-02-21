@@ -385,11 +385,50 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[21] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_IN_ENABLED=1" -section_id auto_signaltap_0
-set_location_assignment PIN_B14 -to seg_en
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to seg_en
-set_global_assignment -name VHDL_FILE design/ip/7seg/bin2bcd.vhd
-set_global_assignment -name VHDL_FILE design/ip/7seg/seg_hw_ip.vhd
-set_global_assignment -name VHDL_FILE design/ip/7seg/seg.vhdl
+set_location_assignment PIN_A8 -to gpio_o[0]
+set_location_assignment PIN_A9 -to gpio_o[1]
+set_location_assignment PIN_A10 -to gpio_o[2]
+set_location_assignment PIN_B10 -to gpio_o[3]
+set_location_assignment PIN_D13 -to gpio_o[4]
+set_location_assignment PIN_C13 -to gpio_o[5]
+set_location_assignment PIN_E14 -to gpio_o[6]
+set_location_assignment PIN_D14 -to gpio_o[7]
+set_location_assignment PIN_A7 -to gpio_i[0]
+set_location_assignment PIN_B8 -to gpio_i[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[0]
+set_location_assignment PIN_C10 -to gpio_i[2]
+set_location_assignment PIN_C11 -to gpio_i[3]
+set_location_assignment PIN_D12 -to gpio_i[4]
+set_location_assignment PIN_C12 -to gpio_i[5]
+set_location_assignment PIN_A12 -to gpio_i[6]
+set_location_assignment PIN_B12 -to gpio_i[7]
+set_location_assignment PIN_A13 -to gpio_i[8]
+set_location_assignment PIN_A14 -to gpio_i[9]
+set_location_assignment PIN_A11 -to gpio_o[8]
+set_location_assignment PIN_B11 -to gpio_o[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[8]
+set_global_assignment -name VHDL_FILE design/hdl/wb_wrapper.vhd
+set_global_assignment -name VHDL_FILE design/hdl/display_7seg.vhd
+set_global_assignment -name VHDL_FILE design/hdl/bin2bcd.vhd
 set_global_assignment -name VHDL_FILE design/hdl/top.vhd
 set_global_assignment -name VHDL_FILE design/ip/neorv32/rtl/test_setups/neorv32_test_setup_on_chip_debugger.vhd
 set_global_assignment -name VHDL_FILE design/ip/neorv32/rtl/core/mem/neorv32_dmem.default.vhd -library neorv32
@@ -442,46 +481,6 @@ set_global_assignment -name VHDL_FILE design/ip/neorv32/rtl/core/neorv32_bootloa
 set_global_assignment -name VHDL_FILE design/ip/neorv32/rtl/core/neorv32_boot_rom.vhd -library neorv32
 set_global_assignment -name VHDL_FILE design/ip/neorv32/rtl/core/neorv32_application_image.vhd -library neorv32
 set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
-set_location_assignment PIN_A8 -to gpio_o[0]
-set_location_assignment PIN_A9 -to gpio_o[1]
-set_location_assignment PIN_A10 -to gpio_o[2]
-set_location_assignment PIN_B10 -to gpio_o[3]
-set_location_assignment PIN_D13 -to gpio_o[4]
-set_location_assignment PIN_C13 -to gpio_o[5]
-set_location_assignment PIN_E14 -to gpio_o[6]
-set_location_assignment PIN_D14 -to gpio_o[7]
-set_location_assignment PIN_A7 -to gpio_i[0]
-set_location_assignment PIN_B8 -to gpio_i[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[0]
-set_location_assignment PIN_C10 -to gpio_i[2]
-set_location_assignment PIN_C11 -to gpio_i[3]
-set_location_assignment PIN_D12 -to gpio_i[4]
-set_location_assignment PIN_C12 -to gpio_i[5]
-set_location_assignment PIN_A12 -to gpio_i[6]
-set_location_assignment PIN_B12 -to gpio_i[7]
-set_location_assignment PIN_A13 -to gpio_i[8]
-set_location_assignment PIN_A14 -to gpio_i[9]
-set_location_assignment PIN_A11 -to gpio_o[8]
-set_location_assignment PIN_B11 -to gpio_o[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_i
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to gpio_o[8]
+set_location_assignment PIN_B14 -to gpio_i[10]
 set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
