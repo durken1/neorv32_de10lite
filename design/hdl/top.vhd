@@ -47,35 +47,34 @@ begin
   -- The Core Of The Problem ----------------------------------------------------------------
   -- -------------------------------------------------------------------------------------------
   neorv32_top_inst : neorv32_top
-  generic
-  map (
-  -- General --
-  CLOCK_FREQUENCY   => 50_000_000, -- clock frequency of clk_i in Hz
-  INT_BOOTLOADER_EN => true, -- boot configuration: true = boot explicit bootloader; false = boot from int/ext (I)MEM
-  -- On-Chip Debugger (OCD) --
-  ON_CHIP_DEBUGGER_EN => true, -- implement on-chip debugger
-  -- RISC-V CPU Extensions --
-  CPU_EXTENSION_RISCV_C      => true, -- implement compressed extension?
-  CPU_EXTENSION_RISCV_M      => true, -- implement mul/div extension?
-  CPU_EXTENSION_RISCV_U      => true, -- implement user mode extension?
-  CPU_EXTENSION_RISCV_Zicntr => true, -- implement base counters?
-  -- Internal Instruction memory --
-  MEM_INT_IMEM_EN   => true, -- implement processor-internal instruction memory
-  MEM_INT_IMEM_SIZE => 32 * 1024, -- size of processor-internal instruction memory in bytes
-  -- Internal Data memory --
-  MEM_INT_DMEM_EN   => true, -- implement processor-internal data memory
-  MEM_INT_DMEM_SIZE => 16 * 1024, -- size of processor-internal data memory in bytes
-  -- External memory interface (WISHBONE) --
-  MEM_EXT_EN         => true, -- implement external memory bus interface?
-  MEM_EXT_TIMEOUT    => 255, -- cycles after a pending bus access auto-terminates (0 = disabled)
-  MEM_EXT_PIPE_MODE  => false, -- protocol: false=classic/standard wishbone mode, true=pipelined wishbone mode
-  MEM_EXT_BIG_ENDIAN => false, -- byte order: true=big-endian, false=little-endian
-  MEM_EXT_ASYNC_RX   => false, -- use register buffer for RX data when false
-  MEM_EXT_ASYNC_TX   => false, -- use register buffer for TX data when false
-  -- Processor peripherals --
-  IO_GPIO_NUM => 11, -- number of GPIO input/output pairs (0..64)
-  IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
-  IO_UART0_EN => true -- implement primary universal asynchronous receiver/transmitter (UART0)?
+  generic map(
+    -- General --
+    CLOCK_FREQUENCY   => 50_000_000, -- clock frequency of clk_i in Hz
+    INT_BOOTLOADER_EN => true, -- boot configuration: true = boot explicit bootloader; false = boot from int/ext (I)MEM
+    -- On-Chip Debugger (OCD) --
+    ON_CHIP_DEBUGGER_EN => true, -- implement on-chip debugger
+    -- RISC-V CPU Extensions --
+    CPU_EXTENSION_RISCV_C      => true, -- implement compressed extension?
+    CPU_EXTENSION_RISCV_M      => true, -- implement mul/div extension?
+    CPU_EXTENSION_RISCV_U      => true, -- implement user mode extension?
+    CPU_EXTENSION_RISCV_Zicntr => true, -- implement base counters?
+    -- Internal Instruction memory --
+    MEM_INT_IMEM_EN   => true, -- implement processor-internal instruction memory
+    MEM_INT_IMEM_SIZE => 32 * 1024, -- size of processor-internal instruction memory in bytes
+    -- Internal Data memory --
+    MEM_INT_DMEM_EN   => true, -- implement processor-internal data memory
+    MEM_INT_DMEM_SIZE => 16 * 1024, -- size of processor-internal data memory in bytes
+    -- External memory interface (WISHBONE) --
+    MEM_EXT_EN         => true, -- implement external memory bus interface?
+    MEM_EXT_TIMEOUT    => 255, -- cycles after a pending bus access auto-terminates (0 = disabled)
+    MEM_EXT_PIPE_MODE  => false, -- protocol: false=classic/standard wishbone mode, true=pipelined wishbone mode
+    MEM_EXT_BIG_ENDIAN => false, -- byte order: true=big-endian, false=little-endian
+    MEM_EXT_ASYNC_RX   => false, -- use register buffer for RX data when false
+    MEM_EXT_ASYNC_TX   => false, -- use register buffer for TX data when false
+    -- Processor peripherals --
+    IO_GPIO_NUM => 11, -- number of GPIO input/output pairs (0..64)
+    IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
+    IO_UART0_EN => true -- implement primary universal asynchronous receiver/transmitter (UART0)?
   )
   port map(
     -- Global control --
@@ -107,10 +106,9 @@ begin
   );
 
   wb_wrapper_inst : entity work.wb_wrapper
-    generic
-    map (
-    WB_ADDR_BASE => X"90000000",
-    WB_ADDR_SIZE => 8
+    generic map(
+      WB_ADDR_BASE => X"90000000",
+      WB_ADDR_SIZE => 16
     )
     port map(
       wb_clk_i  => clk,
@@ -131,7 +129,7 @@ begin
       segled5_o => disp5
     );
 
-  gpio_o <= con_gpio_o(9 downto 0);
+  gpio_o                  <= con_gpio_o(9 downto 0);
   con_gpio_i(10 downto 0) <= gpio_i;
 
 end architecture;

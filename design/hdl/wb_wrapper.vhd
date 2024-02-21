@@ -10,8 +10,7 @@ library neorv32;
 use neorv32.neorv32_package.all;
 
 entity wb_wrapper is
-  generic
-  (
+  generic (
     WB_ADDR_BASE : std_ulogic_vector(31 downto 0); -- module base address, size-aligned
     WB_ADDR_SIZE : positive -- module address space in bytes, has to be a power of two, min 4
   );
@@ -47,7 +46,10 @@ architecture rtl of wb_wrapper is
 
   -- dummy registers --
   type mm_reg_t is array (0 to (WB_ADDR_SIZE/4) - 1) of std_ulogic_vector(31 downto 0);
-  signal mm_reg : mm_reg_t;
+  signal mm_reg_in  : mm_reg_t;
+  signal mm_reg_out : mm_reg_t;
+
+  signal move_int : std_ulogic;
 
 begin
 
@@ -65,9 +67,9 @@ begin
   rw_access : process (wb_rstn_i, wb_clk_i)
   begin
     if (wb_rstn_i = '0') then
-      wb_dat_o <= (others => '-'); -- no reset
-      wb_ack_o <= '0';
-      mm_reg   <= (others => (others => '-')); -- no reset
+      wb_dat_o  <= (others => '-'); -- no reset
+      wb_ack_o  <= '0';
+      mm_reg_in <= (others => (others => '-')); -- no reset
     elsif rising_edge(wb_clk_i) then
       -- defaults --
       wb_dat_o <= (others => '0');
@@ -77,11 +79,11 @@ begin
       if (wb_cyc_i = '1') and (wb_stb_i = '1') and (access_req = '1') then -- classic-mode Wishbone protocol
         if (wb_we_i = '1') then -- write access
           if (wb_sel_i = "1111") then -- only full-word accesses, no ACK otherwise
-            mm_reg(to_integer(unsigned(wb_adr_i(index_size_f(WB_ADDR_SIZE) - 1 downto 2)))) <= wb_dat_i;
-            wb_ack_o                                                                        <= '1';
+            mm_reg_in(to_integer(unsigned(wb_adr_i(index_size_f(WB_ADDR_SIZE) - 1 downto 2)))) <= wb_dat_i;
+            wb_ack_o                                                                           <= '1';
           end if;
         else -- sync read access
-          wb_dat_o <= mm_reg(to_integer(unsigned(wb_adr_i(index_size_f(WB_ADDR_SIZE) - 1 downto 2))));
+          wb_dat_o <= mm_reg_out(to_integer(unsigned(wb_adr_i(index_size_f(WB_ADDR_SIZE) - 1 downto 2))));
           wb_ack_o <= '1';
         end if;
       end if;
@@ -92,14 +94,23 @@ begin
     port map(
       clk_i     => wb_clk_i,
       rstn_i    => wb_rstn_i,
-      data_i    => mm_reg(0),
-      setup_i   => mm_reg(1),
+      data_i    => mm_reg_in(0),
+      setup_i   => mm_reg_in(1),
       segled0_o => segled0_o,
       segled1_o => segled1_o,
       segled2_o => segled2_o,
       segled3_o => segled3_o,
       segled4_o => segled4_o,
       segled5_o => segled5_o
+    );
+
+  aoc_d3_inst : entity work.aoc_d3
+    port map(
+      clk_i       => wb_clk_i,
+      rstn_i      => wb_rstn_i,
+      direction_i => mm_reg_in(2)(1 downto 0),
+      move_i      => mm_reg_in(2)(2),
+      sum_o       => mm_reg_out(0)
     );
 
 end rtl;
