@@ -23,7 +23,11 @@ entity top is
     jtag_tck  : in std_ulogic  := 'X'; -- tck
     jtag_tdi  : in std_ulogic  := 'X'; -- tdi
     jtag_tdo  : out std_ulogic := 'X'; -- tdo
-    jtag_tms  : in std_ulogic  := 'X' -- tms
+    jtag_tms  : in std_ulogic  := 'X'; -- tms
+    spi_clk   : out std_ulogic;
+    spi_cs_n  : out std_ulogic_vector(7 downto 0);
+    spi_do    : out std_ulogic;
+    spi_di    : in std_ulogic
   );
 end entity top;
 
@@ -74,7 +78,8 @@ begin
     -- Processor peripherals --
     IO_GPIO_NUM => 11, -- number of GPIO input/output pairs (0..64)
     IO_MTIME_EN => true, -- implement machine system timer (MTIME)?
-    IO_UART0_EN => true -- implement primary universal asynchronous receiver/transmitter (UART0)?
+    IO_UART0_EN => true, -- implement primary universal asynchronous receiver/transmitter (UART0)?
+    IO_SPI_EN   => true -- implement serial peripheral interface (SPI)?
   )
   port map(
     -- Global control --
@@ -102,7 +107,13 @@ begin
     gpio_i => con_gpio_i, -- parallel output
     -- primary UART0 (available if IO_UART0_EN = true) --
     uart0_txd_o => uart0_tx, -- UART0 send data
-    uart0_rxd_i => uart0_rx -- UART0 receive data
+    uart0_rxd_i => uart0_rx, -- UART0 receive data
+    -- SPI (available if IO_SPI_EN = true) --
+    spi_clk_o => spi_clk, -- SPI serial clock
+    spi_dat_o => spi_do, -- controller data out, peripheral data in
+    spi_dat_i => spi_di, -- controller data in, peripheral data out
+    spi_csn_o => spi_cs_n -- chip-select
+
   );
 
   wb_wrapper_inst : entity work.wb_wrapper
