@@ -67,9 +67,9 @@ begin
   rw_access : process (wb_rstn_i, wb_clk_i)
   begin
     if (wb_rstn_i = '0') then
-      wb_dat_o  <= (others => '-'); -- no reset
+      wb_dat_o  <= (others => '0'); 
       wb_ack_o  <= '0';
-      mm_reg_in <= (others => (others => '-')); -- no reset
+      mm_reg_in <= (others => (others => '0')); -- no reset
     elsif rising_edge(wb_clk_i) then
       -- defaults --
       wb_dat_o <= (others => '0');
@@ -94,7 +94,7 @@ begin
     port map(
       clk_i     => wb_clk_i,
       rstn_i    => wb_rstn_i,
-      data_i    => mm_reg_in(0),
+      data_i    => mm_reg_out(0),
       setup_i   => mm_reg_in(1),
       segled0_o => segled0_o,
       segled1_o => segled1_o,
@@ -108,8 +108,7 @@ begin
     port map(
       clk_i       => wb_clk_i,
       rstn_i      => wb_rstn_i,
-      direction_i => mm_reg_in(2)(1 downto 0),
-      move_i      => mm_reg_in(2)(2),
+      data_i      => mm_reg_in(2),
       sum_o       => mm_reg_out(0)
     );
 
