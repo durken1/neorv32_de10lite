@@ -5,4 +5,5 @@ db/
 incremental_db/
 .qsys_edit/
 .vscode/
+*.rpt
 neorv32_assignment_defaults.qdf
